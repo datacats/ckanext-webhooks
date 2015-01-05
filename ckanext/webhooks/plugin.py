@@ -5,6 +5,9 @@ import logging
 import db
 import actions
 
+import ckan.model as model
+from ckan.model.domain_object import DomainObjectOperation
+
 log = logging.getLogger(__name__)
 
 class WebhooksPlugin(plugins.SingletonPlugin):
@@ -22,10 +25,31 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     #IDomainObjectNotification & #IResourceURLChange
     def notify(self, entity, operation=None):
         if isinstance(entity, model.Resource):
-            if (operation == model.domain_object.DomainObjectOperation.new
-                or not operation):
+            if (operation == DomainObjectOperation.new or not operation):
                 pass
                 #notify all registered parties of new resource
+
+            if (operation == DomainObjectOperation.changed):
+                pass
+                #notify all of change in resource
+
+            elif (operation == DomainObjectOperation.deleted):
+                pass
+                #notify all of resource deletion
+
+        if isinstance(entity, model.Package):
+            if (operation == DomainObjectOperation.new):
+                pass
+                #notify all of new dataset
+
+            elif (operation == DomainObjectOperation.changed):
+                pass
+                #notify all of change in dataset
+
+            elif (operation == DomainObjectOperation.deleted):
+                pass
+                #notify all of dataset delete
+
 
     def after_map(self, map):
         return map
