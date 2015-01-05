@@ -30,26 +30,23 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
         if isinstance(entity, model.Resource):
             if (operation == DomainObjectOperation.new or not operation):
-                pass
-                #notify all registered parties of new resource
+                self._notify_hooks(entity, context, 'resource/create')
 
             if (operation == DomainObjectOperation.changed):
-                pass
-                #notify all of change in resource
+                self._notify_hooks(entity, context, 'resource/update')
 
             elif (operation == DomainObjectOperation.deleted):
-                pass
-                #notify all of resource deletion
+                self._notify_hooks(entity, context, 'resource/delete')
 
         if isinstance(entity, model.Package):
             if (operation == DomainObjectOperation.new):
-                self._notify_package_hooks(entity, context, 'dataset/create')
+                self._notify_hooks(entity, context, 'dataset/create')
 
             elif (operation == DomainObjectOperation.changed):
-                self._notify_package_hooks(entity, context, 'dataset/update')
+                self._notify_hooks(entity, context, 'dataset/update')
 
             elif (operation == DomainObjectOperation.deleted):
-                self._notify_package_hooks(entity, context, 'dataset/delete')
+                self._notify_hooks(entity, context, 'dataset/delete')
 
     def get_actions(self):
         actions_dict = {
@@ -60,13 +57,13 @@ class WebhooksPlugin(plugins.SingletonPlugin):
         return actions_dict
 
     #Notification functions be here
-    def _notify_package_hooks(self, package, context, topic):
+    def _notify_hooks(self, entity, context, topic):
         log.info("Notifying webhooks for {0}".format(topic))
         webhooks = db.Webhook.find(topic=topic)
         for hook in webhooks:
             url = hook.address
             payload = {
-                'entity': table_dictize(package, context),
+                'entity': table_dictize(entity, context),
                 'webhook_id': hook.id
             }
 
