@@ -79,5 +79,8 @@ setup(
     entry_points='''
         [ckan.plugins]
         webhooks=ckanext.webhooks.plugin:WebhooksPlugin
+
+        [paste.paster_command]
+        webhooks=ckanext.webhooks.commands:WebhookCommands
     ''',
 )

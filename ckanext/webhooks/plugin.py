@@ -1,6 +1,14 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
+import logging
+import datetime
+
+from sqlalchemy import Table
+from sqlalchemy import Column
+from sqlalchemy import types
+from ckan.model.meta import metadata,  mapper, Session
+from ckan.model.types import make_uuid
 
 log = logging.getLogger(__name__)
 
@@ -11,13 +19,13 @@ def setup():
         Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
         Column('address', types.UnicodeText),
         Column('topic', types.UnicodeText),
-        Column('user_id', types.UnicoeText, default='u'),
+        Column('user_id', types.UnicodeText, default='u'),
         Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
     )
 
 class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IDomainObjectNotification inherit=True)
+    plugins.implements(plugins.IDomainObjectModification, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -29,6 +37,6 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     def notify(self, entity, operation=None):
         if isinstance(entity, model.Resource):
             if (operation == model.domain_object.DomainObjectOperation.new
-                or not operation)
-
+                or not operation):
+                pass
                 #notify all registered parties of new resource

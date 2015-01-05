@@ -1,16 +1,11 @@
 import ckan.plugins as p
 import paste.script
-import datetime
 import plugin
+import logging
 
 from ckan.lib.cli import CkanCommand
-from sqlalchemy import Table
-from sqlalchemy import Column
-from sqlalchemy import types
 
 from ckan import model
-from ckan.model.meta import metadata,  mapper, Session
-from ckan.model.types import make_uuid
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +25,10 @@ class WebhookCommands(CkanCommand):
         default='development.ini', help='Config file to use.')
 
     def command(self):
+        if not len(self.args):
+            print self.__doc__
+            return
+
         cmd = self.args[0]
         self._load_config()
 
@@ -38,7 +37,7 @@ class WebhookCommands(CkanCommand):
         else:
             print self.__doc__
 
-    def _migrate():
+    def _migrate(self):
         if plugin.webhook_table is None:
             plugin.setup()
 
