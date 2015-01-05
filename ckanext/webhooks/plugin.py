@@ -8,6 +8,7 @@ import requests
 
 import ckan.model as model
 from ckan.model.domain_object import DomainObjectOperation
+from ckan.lib.dictization import table_dictize
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +25,8 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
     #IDomainObjectNotification & #IResourceURLChange
     def notify(self, entity, operation=None):
+        context = {'model': model, 'ignore_auth': True, 'defer_commit': True}
+
         if isinstance(entity, model.Resource):
             if (operation == DomainObjectOperation.new or not operation):
                 pass
@@ -39,7 +42,7 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
         if isinstance(entity, model.Package):
             if (operation == DomainObjectOperation.new):
-                self._notify_package_create(entity)
+                self._notify_package_create(entity, context)
 
             elif (operation == DomainObjectOperation.changed):
                 pass
@@ -58,13 +61,13 @@ class WebhooksPlugin(plugins.SingletonPlugin):
         return actions_dict
 
     #Notification functions be here
-    def _notify_package_create(self, package):
+    def _notify_package_create(self, package, context):
         log.info("Notifying webhooks for package create")
         webhooks = db.Webhook.find(topic='dataset/create')
         for hook in webhooks:
             url = hook.address
             payload = {
-                'entity': package,
+                'entity': table_dictize(package, context),
                 'webhook_id': hook.id
             }
 

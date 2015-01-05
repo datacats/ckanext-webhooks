@@ -56,7 +56,7 @@ def webhook_delete(context, data_dict):
     webhook = db.Webhook.get(id=data['id'])
     if webhook is None:
         raise NotFound()
-        
+
     session = context['session']
     session.delete(webhook)
     session.commit()
