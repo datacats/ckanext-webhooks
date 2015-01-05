@@ -56,12 +56,13 @@ Because of this, the extension makes the following decisions:
   executes and the URL returns a 4xx error several times, the extension will
   eventually delete the webhook.
 
-TODO
+TODO/Wishlist
 ====
 
 - Access control: Make sure access-restricted events do not leak
-- API authentication - send webhooks to users who have API access to the dataset/
-  resource for which the webhook is being fired.
+- API authentication for private events.
+- Retrieve a list of registered webhooks for a given API key.
 - Filter: subscribe by entity id, for selective dataset/resource/etc...
-- Celery tasks for retrying failed hooks
+- Celery tasks for retrying failed hooks with exponential decay
 - Celery tasks for deleting stale unresponsive hooks
+- More hooks!
