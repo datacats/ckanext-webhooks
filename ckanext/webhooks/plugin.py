@@ -33,6 +33,7 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     def get_actions(self):
         actions_dict = {
             'webhook_create': actions.webhook_create,
-            'webhook_delete': actions.webhook_delete
+            'webhook_delete': actions.webhook_delete,
+            'webhook_show': actions.webhook_show
         }
         return actions_dict

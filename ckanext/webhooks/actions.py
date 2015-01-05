@@ -2,6 +2,7 @@ import db
 import logging
 
 from ckan.plugins.toolkit import get_validator, ValidationError
+from ckan.lib.dictization import table_dictize
 import ckan.lib.navl.dictization_functions as df
 
 log = logging.getLogger(__name__)
@@ -14,9 +15,11 @@ schema = {
     'created_at': [get_validator('ignore_missing'), get_validator('isodate')]
 }
 
-def webhook_create(context, data_dict):
-    log.info(data_dict)
+schema_get = {
+    'id': [get_validator('not_empty'), unicode]
+}
 
+def webhook_create(context, data_dict):
     data, errors = df.validate(data_dict, schema, context)
 
     if errors:
@@ -30,6 +33,16 @@ def webhook_create(context, data_dict):
     session = context['session']
     session.add(webhook)
     session.commit()
+
+    return webhook.id
+
+def webhook_show(context, data_dict):
+    data, errors = df.validate(data_dict, schema_get, context)
+    if errors:
+        raise ValidationError(errors)
+
+    webhook = db.Webhook.get(id=data['id'])
+    return table_dictize(webhook, context)
 
 def webhook_delete(context, data_dict):
     pass
