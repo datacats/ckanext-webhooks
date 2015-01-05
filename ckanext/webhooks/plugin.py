@@ -3,6 +3,7 @@ import ckan.plugins.toolkit as toolkit
 import logging
 
 import db
+import json
 import actions
 import requests
 
@@ -71,4 +72,8 @@ class WebhooksPlugin(plugins.SingletonPlugin):
                 'webhook_id': hook.id
             }
 
-            requests.post(url, data=payload)
+            requests.post(url, headers={
+                    'Content-Type': 'application/json'
+                },
+                data=json.dumps(payload)
+            )
