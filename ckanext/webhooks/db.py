@@ -14,3 +14,11 @@ webhook_table = Table('webhooks', metadata,
     Column('user_id', types.UnicodeText, default=u''),
     Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
 )
+
+class Webhook(model.DomainObject):
+    @classmethod
+    def get(cls, **kw):
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw).first()
+
+model.meta.mapper(Webhook, webhook_table)

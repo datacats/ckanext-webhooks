@@ -22,5 +22,7 @@ def webhook_create(context, data_dict):
     if errors:
         raise ValidationError(errors)
 
+    webhook = db.webhook_table
+
 def webhook_delete(context, data_dict):
     pass
