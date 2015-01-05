@@ -1,6 +1,6 @@
 import ckan.plugins as p
 import paste.script
-import plugin
+import db
 import logging
 
 from ckan.lib.cli import CkanCommand
@@ -38,8 +38,8 @@ class WebhookCommands(CkanCommand):
             print self.__doc__
 
     def _migrate(self):
-        if not plugin.webhook_table.exists():
-            plugin.webhook_table.create()
+        if not db.webhook_table.exists():
+            db.webhook_table.create()
             log.info('Webhooks table created')
         else:
             log.warning('Webhooks table already exists')

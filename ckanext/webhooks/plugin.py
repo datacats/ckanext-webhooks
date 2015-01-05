@@ -1,24 +1,11 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-import ckan.model as model
 import logging
-import datetime
 
-from sqlalchemy import Table
-from sqlalchemy import Column
-from sqlalchemy import types
-from ckan.model.meta import metadata,  mapper, Session
-from ckan.model.types import make_uuid
+import db
+import actions
 
 log = logging.getLogger(__name__)
-
-webhook_table = Table('webhooks', metadata,
-    Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-    Column('address', types.UnicodeText),
-    Column('topic', types.UnicodeText),
-    Column('user_id', types.UnicodeText, default=u''),
-    Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
-)
 
 class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
