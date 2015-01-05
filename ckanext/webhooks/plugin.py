@@ -43,15 +43,13 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
         if isinstance(entity, model.Package):
             if (operation == DomainObjectOperation.new):
-                self._notify_package_create(entity, context)
+                self._notify_package_hooks(entity, context, 'dataset/create')
 
             elif (operation == DomainObjectOperation.changed):
-                pass
-                #notify all of change in dataset
+                self._notify_package_hooks(entity, context, 'dataset/update')
 
             elif (operation == DomainObjectOperation.deleted):
-                pass
-                #notify all of dataset delete
+                self._notify_package_hooks(entity, context, 'dataset/delete')
 
     def get_actions(self):
         actions_dict = {
@@ -62,9 +60,9 @@ class WebhooksPlugin(plugins.SingletonPlugin):
         return actions_dict
 
     #Notification functions be here
-    def _notify_package_create(self, package, context):
-        log.info("Notifying webhooks for package create")
-        webhooks = db.Webhook.find(topic='dataset/create')
+    def _notify_package_hooks(self, package, context, topic):
+        log.info("Notifying webhooks for {0}".format(topic))
+        webhooks = db.Webhook.find(topic=topic)
         for hook in webhooks:
             url = hook.address
             payload = {
