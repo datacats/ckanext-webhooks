@@ -1,7 +1,7 @@
 import db
 import logging
 
-from ckan.plugins.toolkit import get_validator
+from ckan.plugins.toolkit import get_validator, ValidationError
 import ckan.lib.navl.dictization_functions as df
 
 log = logging.getLogger(__name__)
@@ -18,6 +18,9 @@ def webhook_create(context, data_dict):
     log.info(data_dict)
 
     data, errors = df.validate(data_dict, schema, context)
+
+    if errors:
+        raise ValidationError(errors)
 
 def webhook_delete(context, data_dict):
     pass
