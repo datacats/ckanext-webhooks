@@ -28,11 +28,11 @@ class WebhooksPlugin(plugins.SingletonPlugin):
                 #notify all registered parties of new resource
 
     def after_map(self, map):
-        pass
+        return map
 
     def get_actions(self):
-        actions = {
+        actions_dict = {
             'webhook_create': actions.webhook_create,
             'webhook_delete': actions.webhook_delete
         }
-        return actions
+        return actions_dict
