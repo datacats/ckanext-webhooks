@@ -23,6 +23,8 @@ webhook_table = Table('webhooks', metadata,
 class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDomainObjectModification, inherit=True)
+    plugins.implements(plugins.IActions, inherit=True)
+    plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -37,3 +39,9 @@ class WebhooksPlugin(plugins.SingletonPlugin):
                 or not operation):
                 pass
                 #notify all registered parties of new resource
+
+    def after_map(self, map):
+        pass
+
+    def get_actions(self):
+        pass
