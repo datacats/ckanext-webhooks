@@ -1,11 +1,14 @@
 import ckan.plugins as p
 import paste.script
+import datetime
 
 from ckan.lib.cli import CkanCommand
 from sqlalchemy import Table
 from sqlalchemy import Column
 from sqlalchemy import types
+
 from ckan.model.meta import metadata,  mapper, Session
+from ckan.model.types import make_uuid
 
 class WebhookCommands(CkanCommand):
     """
@@ -33,5 +36,9 @@ class WebhookCommands(CkanCommand):
 
     def _migrate():
         webhook_table = Table('webhooks', metadata,
-            Column('id')
+            Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
+            Column('address', types.UnicodeText),
+            Column('topic', types.UnicodeText),
+            Column('user_id', types.UnicoeText, default='u'),
+            Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
         )
