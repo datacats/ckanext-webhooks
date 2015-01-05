@@ -31,4 +31,8 @@ class WebhooksPlugin(plugins.SingletonPlugin):
         pass
 
     def get_actions(self):
-        pass
+        actions = {
+            'webhook_create': actions.webhook_create,
+            'webhook_delete': actions.webhook_delete
+        }
+        return actions
