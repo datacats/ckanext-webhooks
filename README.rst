@@ -23,7 +23,15 @@ Add webhooks to your CKAN plugins:
 
     import ckanapi
     ckan = ckanapi.RemoteCKAN('http://some.ckan.org')
-    ckan.action.webhook_create(topic="dataset/create", address="http://my.opendata.org/dataset_webhook")
+
+    #create webhook
+    hook = ckan.action.webhook_create(topic="dataset/create", address="http://example.com/callback")
+
+    #show webhook
+    ckan.action.webhook_show(id=hook)
+
+    #delete webhook
+    ckan.action.webhook_delete(id=hook)
 
 Design Decisions
 ==================
