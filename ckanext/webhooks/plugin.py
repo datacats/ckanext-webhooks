@@ -14,7 +14,6 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDomainObjectModification, inherit=True)
     plugins.implements(plugins.IActions, inherit=True)
-    plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
@@ -49,10 +48,6 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             elif (operation == DomainObjectOperation.deleted):
                 pass
                 #notify all of dataset delete
-
-
-    def after_map(self, map):
-        return map
 
     def get_actions(self):
         actions_dict = {
