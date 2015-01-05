@@ -1,14 +1,18 @@
 import ckan.plugins as p
 import paste.script
 import datetime
+import plugin
 
 from ckan.lib.cli import CkanCommand
 from sqlalchemy import Table
 from sqlalchemy import Column
 from sqlalchemy import types
 
+from ckan import model
 from ckan.model.meta import metadata,  mapper, Session
 from ckan.model.types import make_uuid
+
+log = logging.getLogger(__name__)
 
 class WebhookCommands(CkanCommand):
     """
@@ -35,10 +39,11 @@ class WebhookCommands(CkanCommand):
             print self.__doc__
 
     def _migrate():
-        webhook_table = Table('webhooks', metadata,
-            Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-            Column('address', types.UnicodeText),
-            Column('topic', types.UnicodeText),
-            Column('user_id', types.UnicoeText, default='u'),
-            Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
-        )
+        if plugin.webhook_table is None:
+            plugin.setup()
+
+        if not plugin.webhook_table.exists():
+            plugin.webhook_table.create()
+            log.info('Webhooks table created')
+        else:
+            log.warning('Webhooks table already exists')
