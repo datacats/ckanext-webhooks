@@ -33,6 +33,15 @@ Add webhooks to your CKAN plugins:
     #delete webhook
     ckan.action.webhook_delete(id=hook)
 
+Supported Topics
+================
+- dataset/create
+- dataset/update
+- dataset/delete
+- resource/create
+- resource/update
+- resource/delete
+
 Design Decisions
 ==================
 The extension allows users to create webhooks without logging in. This decreases
