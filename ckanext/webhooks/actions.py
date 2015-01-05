@@ -3,6 +3,7 @@ import logging
 
 from ckan.plugins.toolkit import get_validator, ValidationError
 from ckan.lib.dictization import table_dictize
+from ckan.logic import NotFound
 import ckan.lib.navl.dictization_functions as df
 
 log = logging.getLogger(__name__)
@@ -42,7 +43,19 @@ def webhook_show(context, data_dict):
         raise ValidationError(errors)
 
     webhook = db.Webhook.get(id=data['id'])
+    if webhook is None:
+        raise NotFound()
+
     return table_dictize(webhook, context)
 
 def webhook_delete(context, data_dict):
-    pass
+    data, errors = df.validate(data_dict, schema_get, context)
+    if errors:
+        raise ValidationError(errors)
+
+    webhook = db.Webhook.get(id=data['id'])
+    session = context['session']
+    session.delete(webhook)
+    session.commit()
+
+    return data['id']
