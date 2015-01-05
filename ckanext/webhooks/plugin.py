@@ -4,6 +4,7 @@ import logging
 
 import db
 import actions
+import requests
 
 import ckan.model as model
 from ckan.model.domain_object import DomainObjectOperation
@@ -38,8 +39,7 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
         if isinstance(entity, model.Package):
             if (operation == DomainObjectOperation.new):
-                pass
-                #notify all of new dataset
+                self._notify_package_create(entity)
 
             elif (operation == DomainObjectOperation.changed):
                 pass
@@ -56,3 +56,16 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             'webhook_show': actions.webhook_show
         }
         return actions_dict
+
+    #Notification functions be here
+    def _notify_package_create(self, package):
+        log.info("Notifying webhooks for package create")
+        webhooks = db.Webhook.find(topic='dataset/create')
+        for hook in webhooks:
+            url = hook.address
+            payload = {
+                'entity': package,
+                'webhook_id': hook.id
+            }
+
+            requests.post(url, data=payload)

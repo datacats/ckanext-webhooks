@@ -21,4 +21,9 @@ class Webhook(model.DomainObject):
         query = model.Session.query(cls).autoflush(False)
         return query.filter_by(**kw).first()
 
+    @classmethod
+    def find(cls, **kw):
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw)
+
 model.meta.mapper(Webhook, webhook_table)
