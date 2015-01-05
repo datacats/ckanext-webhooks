@@ -12,16 +12,13 @@ from ckan.model.types import make_uuid
 
 log = logging.getLogger(__name__)
 
-webhook_table = None
-
-def setup():
-    webhook_table = Table('webhooks', metadata,
-        Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
-        Column('address', types.UnicodeText),
-        Column('topic', types.UnicodeText),
-        Column('user_id', types.UnicodeText, default='u'),
-        Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
-    )
+webhook_table = Table('webhooks', metadata,
+    Column('id', types.UnicodeText, primary_key=True, default=make_uuid),
+    Column('address', types.UnicodeText),
+    Column('topic', types.UnicodeText),
+    Column('user_id', types.UnicodeText, default=u''),
+    Column('created_at', types.DateTime, default=datetime.datetime.utcnow)
+)
 
 class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)

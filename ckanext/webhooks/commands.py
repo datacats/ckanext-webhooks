@@ -38,11 +38,9 @@ class WebhookCommands(CkanCommand):
             print self.__doc__
 
     def _migrate(self):
-        if plugin.webhook_table is None:
-            plugin.setup()
-
         if not plugin.webhook_table.exists():
             plugin.webhook_table.create()
             log.info('Webhooks table created')
         else:
             log.warning('Webhooks table already exists')
+            print 'Webhooks table already exists'
