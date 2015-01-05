@@ -11,6 +11,19 @@ common CKAN events, such as:
 Subscribers provide a callback url when registering for an event, and CKAN will
 call that url when the desired event happens.
 
+Usage
+=====
+Add webhooks to your CKAN plugins:
+
+.. code::
+
+    ckan.plugins = ... webhooks
+
+.. code:: python
+
+    import ckanapi
+    ckan = ckanapi.RemoteCKAN('http://some.ckan.org')
+    ckan.action.webhook_create(topic="dataset/create", address="http://my.opendata.org/dataset_webhook")
 
 Design Decisions
 ==================
@@ -41,5 +54,6 @@ TODO
 - Access control: Make sure access-restricted events do not leak
 - API authentication - send webhooks to users who have API access to the dataset/
   resource for which the webhook is being fired.
+- Filter: subscribe by entity id, for selective dataset/resource/etc...
 - Celery tasks for retrying failed hooks
 - Celery tasks for deleting stale unresponsive hooks
