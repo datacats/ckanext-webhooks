@@ -70,5 +70,6 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             requests.post(url, headers={
                     'Content-Type': 'application/json'
                 },
-                data=json.dumps(payload)
+                data=json.dumps(payload),
+                timeout=0.2
             )
