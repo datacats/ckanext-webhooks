@@ -22,14 +22,14 @@ class WebhookReceiver(tornado.web.RequestHandler):
             headers = {
                 'Content-Type': 'application/json'
             },
-            body = data
+            body = self.request.body
         )
 
-        httpclient.fetch(request, request_handler)
+        httpclient.fetch(request, self.request_handler)
 
         self.finish()
 
-    def request_handler(self):
+    def request_handler(self, response):
         pass
 
 def main():
