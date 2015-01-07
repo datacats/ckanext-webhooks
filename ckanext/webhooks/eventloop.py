@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 import tornado.web
@@ -6,20 +7,24 @@ import tornado.ioloop
 from tornado.options import define, options, parse_command_line
 
 define("port", default=8765, help="run on the given port", type=int)
-define("debug", default=False, help="run in debug mode")
+define("debug", default=True, help="run in debug mode")
 
 class WebhookReceiver(tornado.web.RequestHandler):
 
     def post(self):
-        import pdb; pdb.set_trace()
-        body = self.get_argument("data")
+        self.finish()
+
+        body = json.loads(self.request.body)
         url = body['address']
 
-        requests.post(url, headers = {
-                'Content-Type': 'application/json'
-            },
-            data = body
-        )
+        fire_webhook(url, self.request.body)
+
+def fire_webhook(url, data):
+    requests.post(url, headers = {
+            'Content-Type': 'application/json'
+        },
+        data = data
+    )
 
 def main():
     parse_command_line()
