@@ -6,10 +6,11 @@ import db
 import json
 import actions
 import requests
-
 import ckan.model as model
-from ckan.model.domain_object import DomainObjectOperation
+
+from pylons import config
 from ckan.lib.dictization import table_dictize
+from ckan.model.domain_object import DomainObjectOperation
 
 log = logging.getLogger(__name__)
 
@@ -59,11 +60,13 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     #Notification functions be here
     def _notify_hooks(self, entity, context, topic):
         log.info("Notifying webhooks for {0}".format(topic))
+
         webhooks = db.Webhook.find(topic=topic)
         for hook in webhooks:
-            url = hook.address
+            url = config.get('ckanext.webhooks.eventloop', hook.address)
             payload = {
                 'entity': table_dictize(entity, context),
+                'address': hook.address,
                 'webhook_id': hook.id
             }
 
