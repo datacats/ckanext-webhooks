@@ -30,23 +30,27 @@ class WebhooksPlugin(plugins.SingletonPlugin):
         context = {'model': model, 'ignore_auth': True, 'defer_commit': True}
 
         if isinstance(entity, model.Resource):
-            if (operation == DomainObjectOperation.new or not operation):
+            if not operation:
+                #This happens on IResourceURLChange, but I'm not sure whether
+                #to make this into a webhook.
+                return
+            elif operation == DomainObjectOperation.new:
                 self._notify_hooks(entity, context, 'resource/create')
 
-            if (operation == DomainObjectOperation.changed):
+            if operation == DomainObjectOperation.changed:
                 self._notify_hooks(entity, context, 'resource/update')
 
-            elif (operation == DomainObjectOperation.deleted):
+            elif operation == DomainObjectOperation.deleted:
                 self._notify_hooks(entity, context, 'resource/delete')
 
         if isinstance(entity, model.Package):
-            if (operation == DomainObjectOperation.new):
+            if operation == DomainObjectOperation.new:
                 self._notify_hooks(entity, context, 'dataset/create')
 
-            elif (operation == DomainObjectOperation.changed):
+            elif operation == DomainObjectOperation.changed:
                 self._notify_hooks(entity, context, 'dataset/update')
 
-            elif (operation == DomainObjectOperation.deleted):
+            elif operation == DomainObjectOperation.deleted:
                 self._notify_hooks(entity, context, 'dataset/delete')
 
     def get_actions(self):
@@ -59,13 +63,14 @@ class WebhooksPlugin(plugins.SingletonPlugin):
 
     #Notification functions be here
     def _notify_hooks(self, entity, context, topic):
-        log.info("Notifying webhooks for {0}".format(topic))
-
         webhooks = db.Webhook.find(topic=topic)
         for hook in webhooks:
+            dictized = table_dictize(entity, context)
+            log.info('Firing webhooks for {0}:{1}'.format(topic, dictized['name']))
+
             url = config.get('ckanext.webhooks.eventloop', hook.address)
             payload = {
-                'entity': table_dictize(entity, context),
+                'entity': dictized,
                 'address': hook.address,
                 'webhook_id': hook.id
             }
