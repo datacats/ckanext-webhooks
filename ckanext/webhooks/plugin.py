@@ -80,5 +80,5 @@ class WebhooksPlugin(plugins.SingletonPlugin):
                     'Content-Type': 'application/json'
                 },
                 data=json.dumps(payload),
-                timeout=0.2
+                timeout=2
             )
