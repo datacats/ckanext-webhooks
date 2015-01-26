@@ -72,6 +72,6 @@ TODO/Wishlist
 - API authentication for private events.
 - Retrieve a list of registered webhooks for a given API key.
 - Filter: subscribe by entity id, for selective dataset/resource/etc...
-- Celery tasks for retrying failed hooks with exponential decay
-- Celery tasks for deleting stale unresponsive hooks
+- Retry failed hooks with exponential decay
+- Delete stale unresponsive hooks
 - More hooks!
