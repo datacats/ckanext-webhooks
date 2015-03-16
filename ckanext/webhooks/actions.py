@@ -3,7 +3,7 @@ import logging
 
 from ckan.plugins.toolkit import get_validator, ValidationError
 from ckan.lib.dictization import table_dictize
-from ckan.logic import NotFound
+from ckan.logic import NotFound, check_access
 import ckan.lib.navl.dictization_functions as df
 
 log = logging.getLogger(__name__)
@@ -21,6 +21,9 @@ schema_get = {
 }
 
 def webhook_create(context, data_dict):
+
+    check_access("webhook_create", context, data_dict)
+
     data, errors = df.validate(data_dict, schema, context)
 
     if errors:
@@ -38,6 +41,8 @@ def webhook_create(context, data_dict):
     return webhook.id
 
 def webhook_show(context, data_dict):
+    check_access("webhook_show", context, data_dict)
+
     data, errors = df.validate(data_dict, schema_get, context)
     if errors:
         raise ValidationError(errors)
@@ -49,6 +54,8 @@ def webhook_show(context, data_dict):
     return table_dictize(webhook, context)
 
 def webhook_delete(context, data_dict):
+    check_access("webhook_delete", context, data_dict)
+
     data, errors = df.validate(data_dict, schema_get, context)
     if errors:
         raise ValidationError(errors)

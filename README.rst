@@ -44,12 +44,23 @@ Supported Topics
 
 Design Decisions
 ==================
-The extension allows users to create webhooks without logging in. This decreases
-friction to creating webhooks and exposes the functionality to more users. The
-main reason for the decision to do it this way is because most governments
+By default the extension allows users to create webhooks without logging in. This
+decreases friction to creating webhooks and exposes the functionality to more users.
+The main reason for the decision to do it this way is because most governments
 (the primary users of CKAN) do not wish to allow account creation in CKAN to the
 public. If we only allow Webhook creation for users with an API key, many CKAN
 users will be left without a way to create Webhooks.
+
+There is a minimal authentication as you may restrict creation of webhooks to users
+who are editors or administrators of organisations.  You may add a config option
+to your CKAN file as below where the value is one of editor, admin, sysadmin or
+none, specifying the minimum roles required to be able to interact with webhooks.
+
+    # Only let sysadmins create hooks
+    ckanext.webhooks.minimum_auth = sysadmin
+
+    # Only let admins and editors create hooks
+    ckanext.webhooks.minimum_auth = editor
 
 Because of this, the extension makes the following decisions:
 
