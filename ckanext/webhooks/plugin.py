@@ -5,6 +5,7 @@ import logging
 import db
 import json
 import actions
+import auth
 import requests
 import ckan.model as model
 
@@ -18,6 +19,8 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDomainObjectModification, inherit=True)
     plugins.implements(plugins.IActions, inherit=True)
+    plugins.implements(plugins.IAuthFunctions, inherit=True)
+
 
     # IConfigurer
     def update_config(self, config_):
@@ -60,6 +63,15 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             'webhook_show': actions.webhook_show
         }
         return actions_dict
+
+    def get_auth_functions(self):
+        auth_dict = {
+            'webhook_create': auth.webhook_create,
+            'webhook_delete': auth.webhook_delete,
+            'webhook_show': auth.webhook_show
+        }
+        return auth_dict
+
 
     #Notification functions be here
     def _notify_hooks(self, entity, context, topic):
