@@ -42,6 +42,17 @@ Supported Topics
 - resource/update
 - resource/delete
 
+Tornado Eventloop
+================
+CKAN is built on Pylons, which is single-threaded. Things happen within the
+request-response lifecycle. This is not ideal for webhooks, since a webhook
+will block pylons from returning an HTTP response to the web user until the
+relevant webhooks have fired.
+
+Right now this is solved by including a small event loop written in Tornado.
+If you want to use it, add `ckanext.webhooks.eventloop = true` to your ckan.ini
+and then run the event loop with the provided `run_webhooks` command.
+
 Design Decisions
 ==================
 By default the extension allows users to create webhooks without logging in. This
