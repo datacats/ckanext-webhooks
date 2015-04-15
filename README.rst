@@ -50,8 +50,9 @@ will block pylons from returning an HTTP response to the web user until the
 relevant webhooks have fired.
 
 Right now this is solved by including a small event loop written in Tornado.
-If you want to use it, add `ckanext.webhooks.eventloop = true` to your ckan.ini
-and then run the event loop with the provided `run_webhooks` command.
+If you want to use it, run the event loop with the provided `run_webhooks`
+command. Then add `ckanext.webhooks.eventloop = http://localhost:8765` to your 
+ckan.ini.
 
 Design Decisions
 ==================
