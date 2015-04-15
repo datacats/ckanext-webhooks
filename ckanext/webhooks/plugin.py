@@ -77,6 +77,8 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     def _notify_hooks(self, entity, context, topic):
         log.info('Firing webhooks for {0}'.format(topic))
         webhooks = db.Webhook.find(topic=topic)
+        user = model.User.get(context['user'])
+
         for hook in webhooks:
             dictized = table_dictize(entity, context)
             log.info('Firing webhooks for {0}:{1}:{2}'.format(topic, dictized['name'], dictized['format']))
@@ -85,7 +87,9 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             payload = {
                 'entity': dictized,
                 'address': hook.address,
-                'webhook_id': hook.id
+                'webhook_id': hook.id,
+                'ckan': config.get('ckan.site_url'),
+                'apikey': user.apikey
             }
 
             requests.post(url, headers={
