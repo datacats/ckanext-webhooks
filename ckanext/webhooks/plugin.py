@@ -77,12 +77,12 @@ class WebhooksPlugin(plugins.SingletonPlugin):
     def _notify_hooks(self, entity, context, topic):
         log.info('Firing webhooks for {0}'.format(topic))
         webhooks = db.Webhook.find(topic=topic)
-        user = model.User.get(context['user'])
 
         for hook in webhooks:
             dictized = table_dictize(entity, context)
             log.info('Firing webhooks for {0}:{1}:{2}'.format(topic, dictized['name'], dictized['format']))
 
+            user = model.User.get(hook.user_id)
             url = config.get('ckanext.webhooks.eventloop', hook.address)
             payload = {
                 'entity': dictized,

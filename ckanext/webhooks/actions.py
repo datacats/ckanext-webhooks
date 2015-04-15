@@ -4,7 +4,9 @@ import logging
 from ckan.plugins.toolkit import get_validator, ValidationError
 from ckan.lib.dictization import table_dictize
 from ckan.logic import NotFound, check_access
+
 import ckan.lib.navl.dictization_functions as df
+import ckan.model as model
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +34,7 @@ def webhook_create(context, data_dict):
     webhook = db.Webhook()
     webhook.address = data['address']
     webhook.topic = data['topic']
+    webhook.user_id = model.User.get(context['user']).id
     webhook.save()
 
     session = context['session']
