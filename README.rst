@@ -62,15 +62,8 @@ Supported Topics
 - resource/update
 - resource/delete
 
-Design Decisions
+Authentication
 ==================
-By default the extension allows users to create webhooks without logging in. This
-decreases friction to creating webhooks and exposes the functionality to more users.
-The main reason for the decision to do it this way is because most governments
-(the primary users of CKAN) do not wish to allow account creation in CKAN to the
-public. If we only allow Webhook creation for users with an API key, many CKAN
-users will be left without a way to create Webhooks.
-
 There is a minimal authentication as you may restrict creation of webhooks to users
 who are editors or administrators of organisations.  You may add a config option
 to your CKAN file as below where the value is one of editor, admin, sysadmin or
@@ -93,7 +86,6 @@ Some other notes:
 
 TODO/Wishlist
 =============
-
 - Access control: Make sure access-restricted events do not leak
 - API authentication for private events.
 - Retrieve a list of registered webhooks for a given API key.
