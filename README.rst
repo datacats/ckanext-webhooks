@@ -19,6 +19,26 @@ Add webhooks to your CKAN plugins:
 
     ckan.plugins = ... webhooks
 
+The extension pushes webhook notifications onto the CKAN celery queue, so that
+the web app won't block executions while the webhooks are firing. For this
+reason you need to make sure the celery daemon is running:
+
+.. code::
+
+    paster --plugin=ckan celeryd -c development.inherit
+
+Or if you are using datacats:
+
+.. code:
+
+    datacats paster celeryd
+
+Creating Webhooks
+=================
+At the moment there is no web interface to create Webhooks. Please make one if
+you're up for it! For now, hooks must be registered through the action API.
+For example:
+
 .. code:: python
 
     import ckanapi
@@ -42,18 +62,6 @@ Supported Topics
 - resource/update
 - resource/delete
 
-Tornado Eventloop
-================
-CKAN is built on Pylons, which is single-threaded. Things happen within the
-request-response lifecycle. This is not ideal for webhooks, since a webhook
-will block pylons from returning an HTTP response to the web user until the
-relevant webhooks have fired.
-
-Right now this is solved by including a small event loop written in Tornado.
-If you want to use it, run the event loop with the provided `run_webhooks`
-command. Then add `ckanext.webhooks.eventloop = http://localhost:8765` to your 
-ckan.ini.
-
 Design Decisions
 ==================
 By default the extension allows users to create webhooks without logging in. This
@@ -74,22 +82,17 @@ none, specifying the minimum roles required to be able to interact with webhooks
     # Only let admins and editors create hooks
     ckanext.webhooks.minimum_auth = editor
 
-Because of this, the extension makes the following decisions:
+Some other notes:
 
-- There is no way to list all existing webhooks. This would allow everyone to
-  see everybody else's webhooks.
 - Each webhook gets a random id that is sufficiently long to be impractical to
   guess.
-- Consequently, a user needs to keep track of their webhook ids in order to
+- A user needs to keep track of their webhook ids in order to
   delete a webhook. The id is returned on webhook creation, and it is also passed
   in the webhook execution call, so if the user loses it, they can fetch it next
   time the webhook is executed.
-- This might create the problem of stale webhooks, but that is ok. If a webhook
-  executes and the URL returns a 4xx error several times, the extension will
-  eventually delete the webhook.
 
 TODO/Wishlist
-====
+=============
 
 - Access control: Make sure access-restricted events do not leak
 - API authentication for private events.
