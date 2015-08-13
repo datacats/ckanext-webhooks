@@ -56,13 +56,6 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             else:
                 return
 
-            dictized = table_dictize(entity, context)
-            celery.send_task(
-                'webhooks.notify_hooks',
-                args=[dictized, topic],
-                task_id='{}-{}'.format(str(uuid.uuid4()), topic)
-            )
-
         if isinstance(entity, model.Package):
             if operation == DomainObjectOperation.new:
                 topic = 'dataset/create'
@@ -76,10 +69,14 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             else:
                 return
 
-            dictized = table_dictize(entity, context)
+        webhooks = db.Webhook.find(topic=topic)
+
+        for hook in webhooks:
+            resource = table_dictize(entity, context)
+            webhook = table_dictize(hook, context)
             celery.send_task(
                 'webhooks.notify_hooks',
-                args=[dictized, topic],
+                args=[resource, webhook, config.get('ckan.site_url')],
                 task_id='{}-{}'.format(str(uuid.uuid4()), topic)
             )
 
