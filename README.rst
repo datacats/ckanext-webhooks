@@ -25,7 +25,7 @@ reason you need to make sure the celery daemon is running:
 
 .. code::
 
-    paster --plugin=ckan celeryd -c development.inherit
+    paster --plugin=ckan celeryd -c development.ini
 
 Or if you are using datacats:
 
