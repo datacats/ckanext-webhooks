@@ -22,6 +22,10 @@ schema_get = {
     'id': [get_validator('not_empty'), unicode]
 }
 
+schema_list = {
+    'topic': [get_validator('not_empty'), unicode]
+}
+
 def webhook_create(context, data_dict):
 
     check_access("webhook_create", context, data_dict)
@@ -55,6 +59,21 @@ def webhook_show(context, data_dict):
         raise NotFound()
 
     return table_dictize(webhook, context)
+
+def webhook_list(context, data_dict):
+    check_access("webhook_list", context, data_dict)
+
+    data, errors = df.validate(data_dict, schema_list, context)
+    if errors:
+        raise ValidationError(errors)
+
+    webhooks = db.Webhook.find(topic=data['topic']).all()
+    if webhooks is None:
+        raise NotFound()
+
+    ids = [webhook.id for webhook in webhooks]
+
+    return ids
 
 def webhook_delete(context, data_dict):
     check_access("webhook_delete", context, data_dict)
