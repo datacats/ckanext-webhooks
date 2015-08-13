@@ -2,8 +2,9 @@
 ckanext-webhooks
 ================
 
-Webhooks for your CKAN. Allows users and services to register to be notified for
-common CKAN events, such as:
+Webhooks for your CKAN. For example, as an app developer you want to be notified
+when a dataset your app depends on is updated. This extension allows users and
+services to register to be notified for common CKAN events, such as:
 
 - Dataset Events - new, update, delete
 - Resource Events - new, update, delete
@@ -11,9 +12,9 @@ common CKAN events, such as:
 Subscribers provide a callback url when registering for an event, and CKAN will
 call that url when the desired event happens.
 
-Usage
-=====
-Add webhooks to your CKAN plugins:
+Installation
+============
+Add `webhooks` to your CKAN plugins:
 
 .. code::
 
@@ -33,8 +34,8 @@ Or if you are using datacats:
 
     datacats paster celeryd
 
-Creating Webhooks
-=================
+Usage
+=====
 At the moment there is no web interface to create Webhooks. Please make one if
 you're up for it! For now, hooks must be registered through the action API.
 For example:
