@@ -10,6 +10,7 @@ import requests
 import ckan.model as model
 
 from pylons import config
+from ckan.lib.celery_app import celery
 from ckan.lib.dictization import table_dictize
 from ckan.model.domain_object import DomainObjectOperation
 
@@ -38,23 +39,41 @@ class WebhooksPlugin(plugins.SingletonPlugin):
                 #to make this into a webhook.
                 return
             elif operation == DomainObjectOperation.new:
-                self._notify_hooks(entity, context, 'resource/create')
+                topic = 'resource/create'
 
             if operation == DomainObjectOperation.changed:
-                self._notify_hooks(entity, context, 'resource/update')
+                topic = 'resource/update'
 
             elif operation == DomainObjectOperation.deleted:
-                self._notify_hooks(entity, context, 'resource/delete')
+                topic = 'resource/delete'
+
+            else:
+                return
+
+            celery.send_task(
+                'webhooks.notify_hooks',
+                args=[entity, context, topic],
+                task_id='{}-{}'.format(str(uuid.uuid4()), topic)
+            )
 
         if isinstance(entity, model.Package):
             if operation == DomainObjectOperation.new:
-                self._notify_hooks(entity, context, 'dataset/create')
+                topic = 'dataset/create'
 
             elif operation == DomainObjectOperation.changed:
-                self._notify_hooks(entity, context, 'dataset/update')
+                topic = 'dataset/update'
 
             elif operation == DomainObjectOperation.deleted:
-                self._notify_hooks(entity, context, 'dataset/delete')
+                topic = 'dataset/delete'
+
+            else:
+                return
+
+            celery.send_task(
+                'webhooks.notify_hooks',
+                args=[entity, context, topic],
+                task_id='{}-{}'.format(str(uuid.uuid4()), topic)
+            )
 
     def get_actions(self):
         actions_dict = {
@@ -71,29 +90,3 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             'webhook_show': auth.webhook_show
         }
         return auth_dict
-
-
-    #Notification functions be here
-    def _notify_hooks(self, entity, context, topic):
-        log.info('Firing webhooks for {0}'.format(topic))
-        webhooks = db.Webhook.find(topic=topic)
-
-        for hook in webhooks:
-            dictized = table_dictize(entity, context)
-
-            user = model.User.get(hook.user_id)
-            url = config.get('ckanext.webhooks.eventloop', hook.address)
-            payload = {
-                'entity': dictized,
-                'address': hook.address,
-                'webhook_id': hook.id,
-                'ckan': config.get('ckan.site_url'),
-                'apikey': user.apikey
-            }
-
-            requests.post(url, headers={
-                    'Content-Type': 'application/json'
-                },
-                data=json.dumps(payload),
-                timeout=2
-            )
