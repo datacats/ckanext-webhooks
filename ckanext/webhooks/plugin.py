@@ -3,9 +3,10 @@ import ckan.plugins.toolkit as toolkit
 import logging
 
 import db
+import uuid
 import json
-import actions
 import auth
+import actions
 import requests
 import ckan.model as model
 
@@ -18,10 +19,15 @@ log = logging.getLogger(__name__)
 
 class WebhooksPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IConfigurable)
     plugins.implements(plugins.IDomainObjectModification, inherit=True)
     plugins.implements(plugins.IActions, inherit=True)
     plugins.implements(plugins.IAuthFunctions, inherit=True)
 
+    # IConfigurable
+    def configure(self, config):
+        if not db.webhook_table.exists():
+            db.webhook_table.create()
 
     # IConfigurer
     def update_config(self, config_):
@@ -50,9 +56,10 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             else:
                 return
 
+            dictized = table_dictize(entity, context)
             celery.send_task(
                 'webhooks.notify_hooks',
-                args=[entity, context, topic],
+                args=[dictized, topic],
                 task_id='{}-{}'.format(str(uuid.uuid4()), topic)
             )
 
@@ -69,9 +76,10 @@ class WebhooksPlugin(plugins.SingletonPlugin):
             else:
                 return
 
+            dictized = table_dictize(entity, context)
             celery.send_task(
                 'webhooks.notify_hooks',
-                args=[entity, context, topic],
+                args=[dictized, topic],
                 task_id='{}-{}'.format(str(uuid.uuid4()), topic)
             )
 
